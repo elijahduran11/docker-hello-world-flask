@@ -1,0 +1,30 @@
+trigger:
+- main  # Trigger on changes to the main branch
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+# Step 1: Build the Docker image
+- task: Docker@2
+  displayName: 'Build Docker Image'
+  inputs:
+    command: 'build'
+    repository: 'techRegistry/image-elijahduran11/testing'  # Your ACR repository name
+    dockerfile: '**/Dockerfile'  # Path to your Dockerfile
+    tags: |
+      $(Build.BuildId)  # Tag using Build ID for uniqueness
+
+# Step 2: List Docker images for debugging (optional)
+- script: |
+    docker images
+  displayName: 'List Docker Images'
+
+# Step 3: Push the Docker image to ACR
+- task: Docker@2
+  displayName: 'Push Docker Image'
+  inputs:
+    command: 'push'
+    repository: 'techRegistry/image-elijahduran11/testing'  # Your ACR repository name
+    tags: |
+      $(Build.BuildId)  # Ensure this matches the build step
